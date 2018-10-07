@@ -63,4 +63,6 @@ public interface DatePickerController {
     DatePickerDialog.Version getVersion();
 
     DatePickerDialog.ScrollOrientation getScrollOrientation();
+
+    DatePickerDialog.CalendarType getCalendarType();
 }

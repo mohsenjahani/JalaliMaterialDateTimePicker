@@ -7,11 +7,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.wdullaer.materialdatetimepicker.JalaliCalendar;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
@@ -34,6 +38,8 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
     private CheckBox limitSelectableDays;
     private CheckBox highlightDays;
     private DatePickerDialog dpd;
+
+    DatePickerDialog.CalendarType calendarType;
 
     public DatePickerFragment() {
         // Required empty public constructor
@@ -59,43 +65,74 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
         limitSelectableDays = view.findViewById(R.id.limit_dates);
         highlightDays = view.findViewById(R.id.highlight_dates);
 
-        view.findViewById(R.id.original_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
-                new android.app.DatePickerDialog(
-                        getActivity(),
-                        new android.app.DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                Log.d("Orignal", "Got clicked");
-                            }
-                        },
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
-                ).show();
-            }
-        });
+        final Spinner spinner = view.findViewById(R.id.calendar_type);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.calendar_types_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        // Android original DatePickerDialog
+//        view.findViewById(R.id.original_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Calendar now = Calendar.getInstance();
+//                new android.app.DatePickerDialog(
+//                        getActivity(),
+//                        new android.app.DatePickerDialog.OnDateSetListener() {
+//                            @Override
+//                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                                Log.d("Orignal", "Got clicked");
+//                            }
+//                        },
+//                        now.get(Calendar.YEAR),
+//                        now.get(Calendar.MONTH),
+//                        now.get(Calendar.DAY_OF_MONTH)
+//                ).show();
+//            }
+//        });
 
         // Show a datepicker when the dateButton is clicked
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
+                Calendar now = null;
                 /*
                 It is recommended to always create a new instance whenever you need to show a Dialog.
                 The sample app is reusing them because it is useful when looking for regressions
                 during testing
                  */
+
+                if(spinner.getSelectedItemPosition()==0)
+                    calendarType = DatePickerDialog.CalendarType.JALAALI;
+                else
+                    calendarType = DatePickerDialog.CalendarType.GREGORIAN;
+
+
+//                Toast.makeText(getContext(), calendarType.toString(), Toast.LENGTH_SHORT).show();
+
+                switch (calendarType){
+                    case GREGORIAN:
+                        now = Calendar.getInstance();
+                        break;
+
+                    case JALAALI:
+                        now = JalaliCalendar.getInstance();
+                        break;
+                }
+
                 if (dpd == null) {
                     dpd = DatePickerDialog.newInstance(
+                            calendarType,
                             DatePickerFragment.this,
                             now.get(Calendar.YEAR),
                             now.get(Calendar.MONTH),
                             now.get(Calendar.DAY_OF_MONTH)
                     );
                 } else {
+                    dpd.setCalendarType(calendarType);
                     dpd.initialize(
                             DatePickerFragment.this,
                             now.get(Calendar.YEAR),
@@ -112,7 +149,14 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                     dpd.setAccentColor(Color.parseColor("#9C27B0"));
                 }
                 if (titleDate.isChecked()) {
-                    dpd.setTitle("DatePicker Title");
+                    switch (calendarType){
+                        case GREGORIAN:
+                            dpd.setTitle("DatePicker Title");
+                            break;
+                        case JALAALI:
+                            dpd.setTitle("عنوان انتخابگر تاریخ");
+                            break;
+                    }
                 }
                 if (highlightDays.isChecked()) {
                     Calendar date1 = Calendar.getInstance();

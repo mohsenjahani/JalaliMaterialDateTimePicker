@@ -8,6 +8,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.widget.Toast;
+
+import com.wdullaer.materialdatetimepicker.JalaliCalendar;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -50,20 +55,20 @@ public class MainActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    return timePickerFragment;
+                    return datePickerFragment;
                 case 1:
                 default:
-                    return datePickerFragment;
+                    return timePickerFragment;
             }
         }
 
         int getTitle(int position) {
             switch(position) {
                 case 0:
-                    return R.string.tab_title_time;
+                    return R.string.tab_title_date;
                 case 1:
                 default:
-                    return R.string.tab_title_date;
+                    return R.string.tab_title_time;
             }
         }
     }

@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.wdullaer.materialdatetimepicker.JalaliCalendar;
 import com.wdullaer.materialdatetimepicker.R;
 import com.wdullaer.materialdatetimepicker.date.MonthAdapter.CalendarDay;
 
@@ -138,8 +139,16 @@ public abstract class MonthView extends View {
         mController = controller;
         Resources res = context.getResources();
 
-        mDayLabelCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
-        mCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
+        switch (controller.getCalendarType()){
+            case JALAALI:
+                mDayLabelCalendar = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                mCalendar = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                break;
+            default: // CalendarType.GREGORIAN
+                mDayLabelCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                mCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                break;
+        }
 
         mDayOfWeekTypeface = res.getString(R.string.mdtp_day_of_week_label_typeface);
         mMonthTitleTypeface = res.getString(R.string.mdtp_sans_serif);
@@ -302,7 +311,15 @@ public abstract class MonthView extends View {
         // Figure out what day today is
         //final Time today = new Time(Time.getCurrentTimezone());
         //today.setToNow();
-        final Calendar today = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
+        Calendar today;
+        switch (mController.getCalendarType()){
+            case JALAALI:
+                today = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                break;
+            default:
+                today = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
+                break;
+        }
         mHasToday = false;
         mToday = -1;
 
@@ -403,6 +420,9 @@ public abstract class MonthView extends View {
 
     @NonNull
     private String getMonthAndYearString() {
+        if(mController.getCalendarType()== DatePickerDialog.CalendarType.JALAALI){
+            return ((JalaliCalendar)mCalendar).getMonthName() + " " + ((JalaliCalendar)mCalendar).get(Calendar.YEAR);
+        }
         Locale locale = mController.getLocale();
         String pattern = "MMMM yyyy";
 
@@ -433,7 +453,15 @@ public abstract class MonthView extends View {
 
             int calendarDay = (i + mWeekStart) % mNumDays;
             mDayLabelCalendar.set(Calendar.DAY_OF_WEEK, calendarDay);
-            String weekString = getWeekDayLabel(mDayLabelCalendar);
+            String weekString = "";
+            switch (mController.getCalendarType()){
+                case GREGORIAN:
+                    weekString = getWeekDayLabel(mDayLabelCalendar);
+                    break;
+                case JALAALI:
+                    weekString = JalaliCalendar.getWeekDayName((mDayLabelCalendar).get(Calendar.DAY_OF_WEEK)).substring(0,1);
+                    break;
+            }
             canvas.drawText(weekString, x, y, mMonthDayLabelPaint);
         }
     }
