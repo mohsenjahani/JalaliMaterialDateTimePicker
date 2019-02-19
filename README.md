@@ -1,4 +1,4 @@
-# Persian Jalali Material DateTime Picker - Select a time/date in style
+# Persian Jalali Material DateTime Picker 
 
 With this library you can pick a date or time for Android, with support Gregorian and Jalali calendar in the same time.
 this library is based on the main library and only the persian jalali calendar and custom font added to it.
