@@ -3,16 +3,20 @@ package com.wdullaer.datetimepickerexample;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.Timepoint;
 
@@ -35,6 +39,9 @@ public class TimePickerFragment extends Fragment implements TimePickerDialog.OnT
     private CheckBox disableSpecificTimes;
     private CheckBox showVersion2;
     private TimePickerDialog tpd;
+
+    TimePickerDialog.Type calendarType;
+    Typeface font;
 
     public TimePickerFragment() {
         // Required empty public constructor
@@ -59,30 +66,48 @@ public class TimePickerFragment extends Fragment implements TimePickerDialog.OnT
         disableSpecificTimes = view.findViewById(R.id.disable_times);
         showVersion2 = view.findViewById(R.id.show_version_2);
 
-        view.findViewById(R.id.original_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar now = Calendar.getInstance();
-                new android.app.TimePickerDialog(
-                        getActivity(),
-                        new android.app.TimePickerDialog.OnTimeSetListener(){
-                            @Override
-                            public void onTimeSet(TimePicker view, int hour, int minute) {
-                                Log.d("Original", "Got clicked");
-                            }
-                        },
-                        now.get(Calendar.HOUR_OF_DAY),
-                        now.get(Calendar.MINUTE),
-                        mode24Hours.isChecked()
-                ).show();
-            }
-        });
+        final Spinner spinner = view.findViewById(R.id.calendar_type);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.calendar_types_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        font = Typeface.createFromAsset(getActivity().getAssets(), "IRANSansMobile(FaNum).ttf");
+
+//        view.findViewById(R.id.original_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Calendar now = Calendar.getInstance();
+//                new android.app.TimePickerDialog(
+//                        getActivity(),
+//                        new android.app.TimePickerDialog.OnTimeSetListener(){
+//                            @Override
+//                            public void onTimeSet(TimePicker view, int hour, int minute) {
+//                                Log.d("Original", "Got clicked");
+//                            }
+//                        },
+//                        now.get(Calendar.HOUR_OF_DAY),
+//                        now.get(Calendar.MINUTE),
+//                        mode24Hours.isChecked()
+//                ).show();
+//            }
+//        });
 
         // Show a timepicker when the timeButton is clicked
         timeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar now = Calendar.getInstance();
+
+
+                if(spinner.getSelectedItemPosition()==0)
+                    calendarType = TimePickerDialog.Type.JALALI;
+                else
+                    calendarType = TimePickerDialog.Type.GREGORIAN;
+
                 /*
                 It is recommended to always create a new instance whenever you need to show a Dialog.
                 The sample app is reusing them because it is useful when looking for regressions
@@ -90,6 +115,7 @@ public class TimePickerFragment extends Fragment implements TimePickerDialog.OnT
                  */
                 if (tpd == null) {
                     tpd = TimePickerDialog.newInstance(
+                            calendarType,
                             TimePickerFragment.this,
                             now.get(Calendar.HOUR_OF_DAY),
                             now.get(Calendar.MINUTE),
@@ -97,12 +123,24 @@ public class TimePickerFragment extends Fragment implements TimePickerDialog.OnT
                     );
                 } else {
                     tpd.initialize(
+                            calendarType,
                             TimePickerFragment.this,
                             now.get(Calendar.HOUR_OF_DAY),
                             now.get(Calendar.MINUTE),
                             now.get(Calendar.SECOND),
                             mode24Hours.isChecked()
                     );
+                }
+
+
+                switch (calendarType){
+                    case GREGORIAN:
+                        tpd.setFont(null);
+                        break;
+
+                    case JALALI:
+                        tpd.setFont(font);
+                        break;
                 }
                 tpd.setThemeDark(modeDarkTime.isChecked());
                 tpd.vibrate(vibrateTime.isChecked());
@@ -113,7 +151,14 @@ public class TimePickerFragment extends Fragment implements TimePickerDialog.OnT
                     tpd.setAccentColor(Color.parseColor("#9C27B0"));
                 }
                 if (titleTime.isChecked()) {
-                    tpd.setTitle("TimePicker Title");
+                    switch (calendarType){
+                        case GREGORIAN:
+                            tpd.setTitle("DatePicker Title");
+                            break;
+                        case JALALI:
+                            tpd.setTitle("عنوان انتخابگر تاریخ");
+                            break;
+                    }
                 }
                 if (limitSelectableTimes.isChecked()) {
                     if (enableSeconds.isChecked()) {

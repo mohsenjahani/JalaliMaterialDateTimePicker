@@ -25,12 +25,15 @@ import android.graphics.Paint.Align;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.wdullaer.materialdatetimepicker.R;
 import com.wdullaer.materialdatetimepicker.Utils;
 
 import java.text.DateFormatSymbols;
 import java.util.Locale;
+
+import static com.wdullaer.materialdatetimepicker.time.TimePickerDialog.Type.JALALI;
 
 /**
  * Draw the two smaller AM and PM circles next to where the larger circle will be.
@@ -74,7 +77,8 @@ public class AmPmCirclesView extends View {
         mIsInitialized = false;
     }
 
-    public void initialize(Context context, Locale locale, TimePickerController controller, int amOrPm) {
+    public void initialize(TimePickerDialog.Type type, Context context, Typeface font, Locale locale, TimePickerController controller, int amOrPm) {
+
         if (mIsInitialized) {
             Log.e(TAG, "AmPmCirclesView may only be initialized once.");
             return;
@@ -100,7 +104,11 @@ public class AmPmCirclesView extends View {
 
         String typefaceFamily = res.getString(R.string.mdtp_sans_serif);
         Typeface tf = Typeface.create(typefaceFamily, Typeface.NORMAL);
-        mPaint.setTypeface(tf);
+        if(font !=null){
+            mPaint.setTypeface(font);
+        }else {
+            mPaint.setTypeface(tf);
+        }
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Align.CENTER);
 
@@ -109,8 +117,16 @@ public class AmPmCirclesView extends View {
         mAmPmCircleRadiusMultiplier =
                 Float.parseFloat(res.getString(R.string.mdtp_ampm_circle_radius_multiplier));
         String[] amPmTexts = new DateFormatSymbols(locale).getAmPmStrings();
-        mAmText = amPmTexts[0];
-        mPmText = amPmTexts[1];
+        switch (type) {
+            case JALALI:
+                mAmText = "ق.ظ";
+                mPmText = "ب.ظ";
+                break;
+            default:
+                mAmText = amPmTexts[0];
+                mPmText = amPmTexts[1];
+                break;
+        }
 
         mAmDisabled = controller.isAmDisabled();
         mPmDisabled = controller.isPmDisabled();

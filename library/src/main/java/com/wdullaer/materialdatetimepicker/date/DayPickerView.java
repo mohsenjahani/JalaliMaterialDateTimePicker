@@ -18,6 +18,7 @@ package com.wdullaer.materialdatetimepicker.date;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,6 +48,7 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
     private static final String TAG = "MonthFragment";
 
     private static SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private Typeface font;
 
     protected Context mContext;
 
@@ -80,8 +82,9 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         init(context, scrollOrientation);
     }
 
-    public DayPickerView(Context context, DatePickerController controller) {
+    public DayPickerView(Context context, DatePickerController controller, Typeface font) {
         super(context);
+        this.font = font;
         init(context, controller.getScrollOrientation());
         setController(controller);
     }
@@ -149,7 +152,7 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
      */
     protected void refreshAdapter() {
         if (mAdapter == null) {
-            mAdapter = createMonthAdapter(mController);
+            mAdapter = createMonthAdapter(mController, font);
         } else {
             mAdapter.setSelectedDay(mSelectedDay);
             if (pageListener != null) pageListener.onPageChanged(getMostVisiblePosition());
@@ -158,7 +161,7 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         setAdapter(mAdapter);
     }
 
-    public abstract MonthAdapter createMonthAdapter(DatePickerController controller);
+    public abstract MonthAdapter createMonthAdapter(DatePickerController controller, Typeface font);
 
     public void setOnPageListener(@Nullable OnPageListener pageListener) {
         this.pageListener = pageListener;

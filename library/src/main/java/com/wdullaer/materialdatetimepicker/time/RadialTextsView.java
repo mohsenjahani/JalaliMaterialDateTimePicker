@@ -86,7 +86,7 @@ public class RadialTextsView extends View {
         mIsInitialized = false;
     }
 
-    public void initialize(Context context, String[] texts, String[] innerTexts,
+    public void initialize(Context context, Typeface font, String[] texts, String[] innerTexts,
             TimePickerController controller, SelectionValidator validator, boolean disappearsOut) {
         if (mIsInitialized) {
             Log.e(TAG, "This RadialTextsView may only be initialized once.");
@@ -98,9 +98,15 @@ public class RadialTextsView extends View {
         int textColorRes = controller.isThemeDark() ? R.color.mdtp_white : R.color.mdtp_numbers_text_color;
         mPaint.setColor(ContextCompat.getColor(context, textColorRes));
         String typefaceFamily = res.getString(R.string.mdtp_radial_numbers_typeface);
-        mTypefaceLight = Typeface.create(typefaceFamily, Typeface.NORMAL);
         String typefaceFamilyRegular = res.getString(R.string.mdtp_sans_serif);
-        mTypefaceRegular = Typeface.create(typefaceFamilyRegular, Typeface.NORMAL);
+        if(font!=null){
+            mTypefaceLight = Typeface.create(font, Typeface.NORMAL);
+            mTypefaceRegular = Typeface.create(font, Typeface.NORMAL);
+        }else {
+            mTypefaceLight = Typeface.create(typefaceFamily, Typeface.NORMAL);
+            mTypefaceRegular = Typeface.create(typefaceFamilyRegular, Typeface.NORMAL);
+        }
+
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Align.CENTER);
 
@@ -109,6 +115,7 @@ public class RadialTextsView extends View {
         mSelectedPaint.setColor(selectedTextColor);
         mSelectedPaint.setAntiAlias(true);
         mSelectedPaint.setTextAlign(Align.CENTER);
+        mSelectedPaint.setTypeface(mTypefaceRegular);
 
         // Set up the inactive paint
         int inactiveColorRes = controller.isThemeDark() ? R.color.mdtp_date_picker_text_disabled_dark_theme
@@ -116,6 +123,7 @@ public class RadialTextsView extends View {
         mInactivePaint.setColor(ContextCompat.getColor(context, inactiveColorRes));
         mInactivePaint.setAntiAlias(true);
         mInactivePaint.setTextAlign(Align.CENTER);
+        mInactivePaint.setTypeface(mTypefaceRegular);
 
         mTexts = texts;
         mInnerTexts = innerTexts;

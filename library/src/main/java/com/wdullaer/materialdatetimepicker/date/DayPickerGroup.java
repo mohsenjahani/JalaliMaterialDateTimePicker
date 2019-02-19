@@ -1,6 +1,8 @@
 package com.wdullaer.materialdatetimepicker.date;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +22,7 @@ public class DayPickerGroup extends ViewGroup
     private ImageButton nextButton;
     private DayPickerView dayPickerView;
     private DatePickerController controller;
+    private Typeface font;
 
     public DayPickerGroup(Context context) {
         super(context);
@@ -42,8 +45,15 @@ public class DayPickerGroup extends ViewGroup
         init();
     }
 
+    public DayPickerGroup(Context context, @NonNull DatePickerController controller, Typeface font) {
+        super(context);
+        this.controller = controller;
+        this.font = font;
+        init();
+    }
+
     private void init() {
-        dayPickerView = new SimpleDayPickerView(getContext(), controller);
+        dayPickerView = new SimpleDayPickerView(getContext(), controller, font);
         addView(dayPickerView);
 
         final LayoutInflater inflater = LayoutInflater.from(getContext());

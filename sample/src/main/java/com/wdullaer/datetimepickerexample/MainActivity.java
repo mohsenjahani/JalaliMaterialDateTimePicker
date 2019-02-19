@@ -1,5 +1,6 @@
 package com.wdullaer.datetimepickerexample;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.app.Fragment;
@@ -13,6 +14,11 @@ import android.widget.Toast;
 import com.wdullaer.materialdatetimepicker.JalaliCalendar;
 
 import java.util.Calendar;
+
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -33,7 +39,20 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
         for(int i=0;i<adapter.getCount();i++) //noinspection ConstantConditions
             tabLayout.getTabAt(i).setText(adapter.getTitle(i));
+
+//        ViewPump.init(ViewPump.builder()
+//                .addInterceptor(new CalligraphyInterceptor(
+//                        new CalligraphyConfig.Builder()
+//                                .setDefaultFontPath("Vazir-FD.ttf")
+//                                .setFontAttrId(R.attr.fontPath)
+//                                .build()))
+//                .build());
     }
+
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
+//    }
 
     private class PickerAdapter extends FragmentPagerAdapter {
         private static final int NUM_PAGES = 2;

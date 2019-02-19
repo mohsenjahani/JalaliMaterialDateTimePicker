@@ -17,6 +17,7 @@
 package com.wdullaer.materialdatetimepicker.date;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 
 /**
@@ -28,13 +29,13 @@ public class SimpleDayPickerView extends DayPickerView {
         super(context, attrs);
     }
 
-    public SimpleDayPickerView(Context context, DatePickerController controller) {
-        super(context, controller);
+    public SimpleDayPickerView(Context context, DatePickerController controller, Typeface font) {
+        super(context, controller, font);
     }
 
     @Override
-    public MonthAdapter createMonthAdapter(DatePickerController controller) {
-        return new SimpleMonthAdapter(controller);
+    public MonthAdapter createMonthAdapter(DatePickerController controller, Typeface font) {
+        return new SimpleMonthAdapter(controller, font);
     }
 
 }

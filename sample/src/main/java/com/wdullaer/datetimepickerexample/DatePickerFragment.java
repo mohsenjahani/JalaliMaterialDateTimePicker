@@ -2,6 +2,7 @@ package com.wdullaer.datetimepickerexample;
 
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,13 +14,11 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.JalaliCalendar;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,8 +37,9 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
     private CheckBox limitSelectableDays;
     private CheckBox highlightDays;
     private DatePickerDialog dpd;
+    Typeface font;
 
-    DatePickerDialog.CalendarType calendarType;
+    DatePickerDialog.Type calendarType;
 
     public DatePickerFragment() {
         // Required empty public constructor
@@ -74,6 +74,8 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
+        font = Typeface.createFromAsset(getActivity().getAssets(), "IRANSansMobile(FaNum).ttf");
+
         // Android original DatePickerDialog
 //        view.findViewById(R.id.original_button).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -106,9 +108,9 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                  */
 
                 if(spinner.getSelectedItemPosition()==0)
-                    calendarType = DatePickerDialog.CalendarType.JALAALI;
+                    calendarType = DatePickerDialog.Type.JALALI;
                 else
-                    calendarType = DatePickerDialog.CalendarType.GREGORIAN;
+                    calendarType = DatePickerDialog.Type.GREGORIAN;
 
 
 //                Toast.makeText(getContext(), calendarType.toString(), Toast.LENGTH_SHORT).show();
@@ -118,7 +120,7 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                         now = Calendar.getInstance();
                         break;
 
-                    case JALAALI:
+                    case JALALI:
                         now = JalaliCalendar.getInstance();
                         break;
                 }
@@ -140,6 +142,16 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                             now.get(Calendar.DAY_OF_MONTH)
                     );
                 }
+
+                switch (calendarType){
+                    case GREGORIAN:
+                        dpd.setFont(null);
+                        break;
+
+                    case JALALI:
+                        dpd.setFont(font);
+                        break;
+                }
                 dpd.setThemeDark(modeDarkDate.isChecked());
                 dpd.vibrate(vibrateDate.isChecked());
                 dpd.dismissOnPause(dismissDate.isChecked());
@@ -153,7 +165,7 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                         case GREGORIAN:
                             dpd.setTitle("DatePicker Title");
                             break;
-                        case JALAALI:
+                        case JALALI:
                             dpd.setTitle("عنوان انتخابگر تاریخ");
                             break;
                     }
@@ -170,7 +182,16 @@ public class DatePickerFragment extends Fragment implements DatePickerDialog.OnD
                 if (limitSelectableDays.isChecked()) {
                     Calendar[] days = new Calendar[13];
                     for (int i = -6; i < 7; i++) {
-                        Calendar day = Calendar.getInstance();
+                        Calendar day;
+                        switch (calendarType){
+                            case JALALI:
+                                day = JalaliCalendar.getInstance();
+                                break;
+
+                            default:
+                                day = Calendar.getInstance();
+                                break;
+                        }
                         day.add(Calendar.DAY_OF_MONTH, i * 2);
                         days[i + 6] = day;
                     }

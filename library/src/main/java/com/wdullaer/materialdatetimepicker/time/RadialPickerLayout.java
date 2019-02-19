@@ -19,6 +19,7 @@ package com.wdullaer.materialdatetimepicker.time;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,6 +96,7 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
 
     private AnimatorSet mTransition;
     private Handler mHandler = new Handler();
+    private Typeface font;
 
     public interface OnValueSelectedListener {
         void onValueSelected(Timepoint newTime);
@@ -156,13 +158,14 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
 
     /**
      * Initialize the Layout with starting values.
+     * @param type
      * @param context A context needed to inflate resources
      * @param locale A Locale to be used when generating strings
      * @param initialTime The initial selection of the Timepicker
      * @param is24HourMode Indicates whether we should render in 24hour mode or with AM/PM selectors
      */
-    public void initialize(Context context, Locale locale, TimePickerController timePickerController,
-            Timepoint initialTime, boolean is24HourMode) {
+    public void initialize(TimePickerDialog.Type type, Context context, Locale locale, TimePickerController timePickerController,
+                           Timepoint initialTime, boolean is24HourMode) {
         if (mTimeInitialized) {
             Log.e(TAG, "Time has already been initialized.");
             return;
@@ -175,7 +178,7 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
         mCircleView.initialize(context, mController);
         mCircleView.invalidate();
         if (!mIs24HourMode && mController.getVersion() == TimePickerDialog.Version.VERSION_1) {
-            mAmPmCirclesView.initialize(context, locale, mController, initialTime.isAM() ? AM : PM);
+            mAmPmCirclesView.initialize(type, context, font, locale, mController, initialTime.isAM() ? AM : PM);
             mAmPmCirclesView.invalidate();
         }
 
@@ -228,14 +231,14 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
             innerHoursTexts = temp;
         }
 
-        mHourRadialTextsView.initialize(context,
+        mHourRadialTextsView.initialize(context, font,
                 hoursTexts, (is24HourMode ? innerHoursTexts : null), mController, hourValidator, true);
         mHourRadialTextsView.setSelection(is24HourMode ? initialTime.getHour() : hours[initialTime.getHour() % 12]);
         mHourRadialTextsView.invalidate();
-        mMinuteRadialTextsView.initialize(context, minutesTexts, null, mController, minuteValidator, false);
+        mMinuteRadialTextsView.initialize(context, font, minutesTexts, null, mController, minuteValidator, false);
         mMinuteRadialTextsView.setSelection(initialTime.getMinute());
         mMinuteRadialTextsView.invalidate();
-        mSecondRadialTextsView.initialize(context, secondsTexts, null, mController, secondValidator, false);
+        mSecondRadialTextsView.initialize(context, font, secondsTexts, null, mController, secondValidator, false);
         mSecondRadialTextsView.setSelection(initialTime.getSecond());
         mSecondRadialTextsView.invalidate();
 
@@ -1041,5 +1044,9 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
         }
 
         return false;
+    }
+
+    public void setFont(Typeface font) {
+        this.font = font;
     }
 }

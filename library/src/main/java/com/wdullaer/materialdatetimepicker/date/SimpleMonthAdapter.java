@@ -17,18 +17,19 @@
 package com.wdullaer.materialdatetimepicker.date;
 
 import android.content.Context;
+import android.graphics.Typeface;
 
 /**
  * An adapter for a list of {@link SimpleMonthView} items.
  */
 public class SimpleMonthAdapter extends MonthAdapter {
 
-    public SimpleMonthAdapter(DatePickerController controller) {
-        super(controller);
+    public SimpleMonthAdapter(DatePickerController controller, Typeface font) {
+        super(controller, font);
     }
 
     @Override
-    public MonthView createMonthView(Context context) {
-        return new SimpleMonthView(context, null, mController);
+    public MonthView createMonthView(Context context, Typeface font) {
+        return new SimpleMonthView(context, null, mController, font);
     }
 }

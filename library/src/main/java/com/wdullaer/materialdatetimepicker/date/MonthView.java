@@ -72,6 +72,7 @@ public abstract class MonthView extends View {
     protected static int DAY_SELECTED_CIRCLE_SIZE;
     protected static int DAY_HIGHLIGHT_CIRCLE_SIZE;
     protected static int DAY_HIGHLIGHT_CIRCLE_MARGIN;
+    protected Typeface font;
 
     protected DatePickerController mController;
 
@@ -130,21 +131,20 @@ public abstract class MonthView extends View {
 
     private SimpleDateFormat weekDayLabelFormatter;
 
-    public MonthView(Context context) {
-        this(context, null, null);
-    }
 
-    public MonthView(Context context, AttributeSet attr, DatePickerController controller) {
+
+    public MonthView(Context context, AttributeSet attr, DatePickerController controller, Typeface font) {
         super(context, attr);
+        this.font = font;
         mController = controller;
         Resources res = context.getResources();
 
         switch (controller.getCalendarType()){
-            case JALAALI:
+            case JALALI:
                 mDayLabelCalendar = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
                 mCalendar = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
                 break;
-            default: // CalendarType.GREGORIAN
+            default: // Type.GREGORIAN
                 mDayLabelCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
                 mCalendar = Calendar.getInstance(mController.getTimeZone(), mController.getLocale());
                 break;
@@ -247,6 +247,8 @@ public abstract class MonthView extends View {
      * want to use a different paint.
      */
     protected void initView() {
+
+
         mMonthTitlePaint = new Paint();
         if (mController.getVersion() == DatePickerDialog.Version.VERSION_1)
             mMonthTitlePaint.setFakeBoldText(true);
@@ -313,7 +315,7 @@ public abstract class MonthView extends View {
         //today.setToNow();
         Calendar today;
         switch (mController.getCalendarType()){
-            case JALAALI:
+            case JALALI:
                 today = JalaliCalendar.getInstance(mController.getTimeZone(), mController.getLocale());
                 break;
             default:
@@ -420,7 +422,7 @@ public abstract class MonthView extends View {
 
     @NonNull
     private String getMonthAndYearString() {
-        if(mController.getCalendarType()== DatePickerDialog.CalendarType.JALAALI){
+        if(mController.getCalendarType()== DatePickerDialog.Type.JALALI){
             return ((JalaliCalendar)mCalendar).getMonthName() + " " + ((JalaliCalendar)mCalendar).get(Calendar.YEAR);
         }
         Locale locale = mController.getLocale();
@@ -458,7 +460,7 @@ public abstract class MonthView extends View {
                 case GREGORIAN:
                     weekString = getWeekDayLabel(mDayLabelCalendar);
                     break;
-                case JALAALI:
+                case JALALI:
                     weekString = JalaliCalendar.getWeekDayName((mDayLabelCalendar).get(Calendar.DAY_OF_WEEK)).substring(0,1);
                     break;
             }

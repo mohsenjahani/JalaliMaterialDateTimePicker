@@ -17,6 +17,7 @@
 package com.wdullaer.materialdatetimepicker.date;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import java.util.TimeZone;
 public abstract class MonthAdapter extends RecyclerView.Adapter<MonthViewHolder> implements OnDayClickListener {
 
     protected final DatePickerController mController;
+    private Typeface font;
 
     private CalendarDay mSelectedDay;
 
@@ -112,8 +114,9 @@ public abstract class MonthAdapter extends RecyclerView.Adapter<MonthViewHolder>
         }
     }
 
-    public MonthAdapter(DatePickerController controller) {
+    public MonthAdapter(DatePickerController controller, Typeface font) {
         mController = controller;
+        this.font = font;
         init();
         setSelectedDay(mController.getSelectedDay());
         setHasStableIds(true);
@@ -145,7 +148,7 @@ public abstract class MonthAdapter extends RecyclerView.Adapter<MonthViewHolder>
     @NonNull
     public MonthViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        MonthView v = createMonthView(parent.getContext());
+        MonthView v = createMonthView(parent.getContext(), font);
         // Set up the new view
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         v.setLayoutParams(params);
@@ -172,7 +175,7 @@ public abstract class MonthAdapter extends RecyclerView.Adapter<MonthViewHolder>
         return endMonth - startMonth + 1;
     }
 
-    public abstract MonthView createMonthView(Context context);
+    public abstract MonthView createMonthView(Context context, Typeface font);
 
     @Override
     public void onDayClick(MonthView view, CalendarDay day) {
