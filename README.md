@@ -7,7 +7,7 @@ this library is based on the main library (https://github.com/wdullaer/MaterialD
 Just add this line to your `build.gradle` dependencies : 
 ```groovy
 dependencies {
-    compile 'ir.scriptestan:jalalimaterialdatetimepicker:0.1.0'
+    implementation 'ir.scriptestan.jalalimaterialdatetimepicker:library:0.1.1'
 }
 ```
 
