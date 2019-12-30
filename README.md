@@ -1,10 +1,10 @@
-# Persian Jalali Material DateTime Picker 
+# Persian Jalali Material DateTime Picker
 
 With this library you can pick a date or time for Android, with support Gregorian and Jalali calendar in the same time.
 this library is based on the main library (https://github.com/wdullaer/MaterialDateTimePicker) and only the persian jalali calendar and custom font added to it.
 
 ### Setup
-Just add this line to your `build.gradle` dependencies : 
+Just add this line to your `build.gradle` dependencies :
 ```groovy
 dependencies {
     implementation 'ir.scriptestan.jalalimaterialdatetimepicker:library:0.1.1'

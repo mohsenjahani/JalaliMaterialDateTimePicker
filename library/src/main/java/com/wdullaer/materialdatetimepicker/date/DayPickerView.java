@@ -16,21 +16,14 @@
 
 package com.wdullaer.materialdatetimepicker.date;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.wdullaer.materialdatetimepicker.GravitySnapHelper;
 import com.wdullaer.materialdatetimepicker.Utils;
@@ -40,6 +33,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * This displays a list of months in a calendar format with selectable days.
  */
@@ -47,7 +45,6 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
 
     private static final String TAG = "MonthFragment";
 
-    private static SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
     private Typeface font;
 
     protected Context mContext;
@@ -89,20 +86,19 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         setController(controller);
     }
 
-    public void setController(DatePickerController controller) {
+    protected void setController(DatePickerController controller) {
         mController = controller;
         mController.registerOnDateChangedListener(this);
         mSelectedDay = new MonthAdapter.CalendarDay(mController.getTimeZone());
         mTempDay = new MonthAdapter.CalendarDay(mController.getTimeZone());
-        YEAR_FORMAT = new SimpleDateFormat("yyyy", controller.getLocale());
         refreshAdapter();
-        onDateChanged();
     }
 
     public void init(Context context, DatePickerDialog.ScrollOrientation scrollOrientation) {
+        @RecyclerView.Orientation
         int layoutOrientation = scrollOrientation == DatePickerDialog.ScrollOrientation.VERTICAL
-                ? LinearLayoutManager.VERTICAL
-                : LinearLayoutManager.HORIZONTAL;
+                ? RecyclerView.VERTICAL
+                : RecyclerView.HORIZONTAL;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, layoutOrientation, false);
         setLayoutManager(linearLayoutManager);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -124,13 +120,10 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         int gravity = scrollOrientation == DatePickerDialog.ScrollOrientation.VERTICAL
                 ? Gravity.TOP
                 : Gravity.START;
-        GravitySnapHelper helper = new GravitySnapHelper(gravity, new GravitySnapHelper.SnapListener() {
-            @Override
-            public void onSnap(int position) {
-                // Leverage the fact that the SnapHelper figures out which position is shown and
-                // pass this on to our PageListener after the snap has happened
-                if (pageListener != null) pageListener.onPageChanged(position);
-            }
+        GravitySnapHelper helper = new GravitySnapHelper(gravity, position -> {
+            // Leverage the fact that the SnapHelper figures out which position is shown and
+            // pass this on to our PageListener after the snap has happened
+            if (pageListener != null) pageListener.onPageChanged(position);
         });
         helper.attachToRecyclerView(this);
     }
@@ -245,12 +238,13 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
 
     public void postSetSelection(final int position) {
         clearFocus();
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ((LinearLayoutManager) getLayoutManager()).scrollToPositionWithOffset(position, 0);
-                if (pageListener != null) pageListener.onPageChanged(position);
-            }
+        post(() -> {
+            ((LinearLayoutManager) getLayoutManager()).scrollToPositionWithOffset(position, 0);
+
+            // Set initial accessibility focus to selected day
+            restoreAccessibilityFocus(mSelectedDay);
+
+            if (pageListener != null) pageListener.onPageChanged(position);
         });
     }
 
@@ -269,7 +263,7 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         return getChildAdapterPosition(getMostVisibleMonth());
     }
 
-    public MonthView getMostVisibleMonth() {
+    public @Nullable MonthView getMostVisibleMonth() {
         boolean verticalScroll = mController.getScrollOrientation() == DatePickerDialog.ScrollOrientation.VERTICAL;
         final int maxSize = verticalScroll ? getHeight() : getWidth();
         int maxDisplayedSize = 0;
@@ -298,6 +292,10 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         return mAdapter.getItemCount();
     }
 
+    /**
+     * This should only be called when the DayPickerView is visible, or when it has already been
+     * requested to be visible
+     */
     @Override
     public void onDateChanged() {
         goTo(mController.getSelectedDay(), false, true, true);
@@ -359,81 +357,20 @@ public abstract class DayPickerView extends RecyclerView implements OnDateChange
         event.setItemCount(-1);
     }
 
-    private static String getMonthAndYearString(MonthAdapter.CalendarDay day, Locale locale) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(day.year, day.month, day.day);
-
-        String sbuf = "";
-        sbuf += cal.getDisplayName(Calendar.MONTH, Calendar.LONG, locale);
-        sbuf += " ";
-        sbuf += YEAR_FORMAT.format(cal.getTime());
-        return sbuf;
-    }
-
-    /**
-     * Necessary for accessibility, to ensure we support "scrolling" forward and backward
-     * in the month list.
-     */
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onInitializeAccessibilityNodeInfo(@NonNull AccessibilityNodeInfo info) {
-        super.onInitializeAccessibilityNodeInfo(info);
-        if (Build.VERSION.SDK_INT >= 21) {
-            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD);
-            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD);
+    void accessibilityAnnouncePageChanged() {
+        MonthView mv = getMostVisibleMonth();
+        if (mv != null) {
+            String monthYear = getMonthAndYearString(mv.mMonth, mv.mYear, mController.getLocale());
+            Utils.tryAccessibilityAnnounce(this, monthYear);
         } else {
-            info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-            info.addAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+            Log.w("DayPickerView", "Tried to announce before layout was initialized");
         }
     }
 
-    /**
-     * When scroll forward/backward events are received, announce the newly scrolled-to month.
-     */
-    @SuppressLint("NewApi")
-    @Override
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
-        if (action != AccessibilityNodeInfo.ACTION_SCROLL_FORWARD &&
-                action != AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-            return super.performAccessibilityAction(action, arguments);
-        }
-        // Figure out what month is showing.
-        int firstVisiblePosition = getFirstVisiblePosition();
-        int minMonth = mController.getStartDate().get(Calendar.MONTH);
-        int month = (firstVisiblePosition + minMonth) % MonthAdapter.MONTHS_IN_YEAR;
-        int year = (firstVisiblePosition + minMonth) / MonthAdapter.MONTHS_IN_YEAR + mController.getMinYear();
-        MonthAdapter.CalendarDay day = new MonthAdapter.CalendarDay(year, month, 1, mController.getTimeZone());
-
-        // Scroll either forward or backward one month.
-        if (action == AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
-            day.month++;
-            if (day.month == 12) {
-                day.month = 0;
-                day.year++;
-            }
-        } else if (action == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-            View firstVisibleView = getChildAt(0);
-            // If the view is fully visible, jump one month back. Otherwise, we'll just jump
-            // to the first day of first visible month.
-            if (firstVisibleView != null && firstVisibleView.getTop() >= -1) {
-                // There's an off-by-one somewhere, so the top of the first visible item will
-                // actually be -1 when it's at the exact top.
-                day.month--;
-                if (day.month == -1) {
-                    day.month = 11;
-                    day.year--;
-                }
-            }
-        }
-
-        // Go to that month.
-        Utils.tryAccessibilityAnnounce(this, getMonthAndYearString(day, mController.getLocale()));
-        goTo(day, true, false, true);
-        return true;
+    private static String getMonthAndYearString(int month, int year, Locale locale) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.YEAR, year);
+        return new SimpleDateFormat("MMMM yyyy", locale).format(calendar.getTime());
     }
-
-    private int getFirstVisiblePosition() {
-        return getChildAdapterPosition(getChildAt(0));
-    }
-
 }

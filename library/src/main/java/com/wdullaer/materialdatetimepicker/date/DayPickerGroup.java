@@ -2,11 +2,12 @@ package com.wdullaer.materialdatetimepicker.date;
 
 import android.app.Activity;
 import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -172,6 +173,7 @@ public class DayPickerGroup extends ViewGroup
     @Override
     public void onPageChanged(int position) {
         updateButtonVisibility(position);
+        dayPickerView.accessibilityAnnouncePageChanged();
     }
 
     @Override
@@ -189,7 +191,7 @@ public class DayPickerGroup extends ViewGroup
         // updateButtonVisibility only triggers when a scroll is completed. So a user might
         // click the button when the animation is still ongoing potentially pushing the target
         // position outside of the bounds of the dayPickerView
-        if (position >= 0 || position < dayPickerView.getCount()) {
+        if (position >= 0 && position < dayPickerView.getCount()) {
             dayPickerView.smoothScrollToPosition(position);
             updateButtonVisibility(position);
         }

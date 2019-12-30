@@ -2,23 +2,12 @@ package com.wdullaer.datetimepickerexample;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.widget.Toast;
-
-import com.wdullaer.materialdatetimepicker.JalaliCalendar;
-
-import java.util.Calendar;
-
-import io.github.inflationx.calligraphy3.CalligraphyConfig;
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
-import io.github.inflationx.viewpump.ViewPump;
-import io.github.inflationx.viewpump.ViewPumpContextWrapper;
+import com.google.android.material.tabs.TabLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -30,29 +19,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        adapter = new PickerAdapter(getFragmentManager());
+        adapter = new PickerAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.pager);
         viewPager.setAdapter(adapter);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar(findViewById(R.id.toolbar));
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        for(int i=0;i<adapter.getCount();i++) //noinspection ConstantConditions
+        for(int i=0; i < adapter.getCount(); i++) //noinspection ConstantConditions
             tabLayout.getTabAt(i).setText(adapter.getTitle(i));
-
-//        ViewPump.init(ViewPump.builder()
-//                .addInterceptor(new CalligraphyInterceptor(
-//                        new CalligraphyConfig.Builder()
-//                                .setDefaultFontPath("Vazir-FD.ttf")
-//                                .setFontAttrId(R.attr.fontPath)
-//                                .build()))
-//                .build());
     }
-
-//    @Override
-//    protected void attachBaseContext(Context newBase) {
-//        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
-//    }
 
     private class PickerAdapter extends FragmentPagerAdapter {
         private static final int NUM_PAGES = 2;

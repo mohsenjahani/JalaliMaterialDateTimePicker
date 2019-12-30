@@ -38,8 +38,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog.OnDateChangedLi
  * Displays a selectable list of years.
  */
 public class YearPickerView extends ListView implements OnItemClickListener, OnDateChangedListener {
-    private static final String TAG = "YearPickerView";
-
     private final DatePickerController mController;
     private YearAdapter mAdapter;
     private int mViewSize;
@@ -161,13 +159,9 @@ public class YearPickerView extends ListView implements OnItemClickListener, OnD
     }
 
     public void postSetSelectionFromTop(final int position, final int offset) {
-        post(new Runnable() {
-
-            @Override
-            public void run() {
-                setSelectionFromTop(position, offset);
-                requestLayout();
-            }
+        post(() -> {
+            setSelectionFromTop(position, offset);
+            requestLayout();
         });
     }
 
