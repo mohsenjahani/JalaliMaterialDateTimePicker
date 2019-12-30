@@ -14,5 +14,6 @@ dependencies {
 ### Screenshots
 Date Picker | Time Picker
 --- | ---
-![Date Picker Persian Jalali](https://raw.githubusercontent.com/mohseneo/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1550606939.png) | ![Time Picker Persian Jalali](https://github.com/mohseneo/JalaliMaterialDateTimePicker/blob/master/screenshots/Screenshot_1550606929.png)
-![Date Picker Gregorian](https://raw.githubusercontent.com/mohseneo/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1550606864.png) | ![Time Picker Gregorian](https://raw.githubusercontent.com/mohseneo/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1550606909.png)
+![Date Picker Persian Jalali](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735860.png) | ![Time Picker Persian Jalali](https://github.com/mohsenjahani/JalaliMaterialDateTimePicker/blob/master/screenshots/Screenshot_1577735871.png)
+![Date Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735887.png) | ![Time Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735881.png)
+![Date Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735950.png) | ![Time Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735950.png)
