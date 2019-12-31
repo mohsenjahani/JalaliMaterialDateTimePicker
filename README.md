@@ -12,7 +12,7 @@ dependencies {
 ```
 
 ### Screenshots
-Date Picker | Time Picker
+Gregorian | Persian Jalali
 --- | ---
 ![Date Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735860.png) | ![Date Picker Persian Jalali](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735871.png)
 ![Time Picker Gregorian](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735887.png) | ![Time Picker Persian Jalali](https://raw.githubusercontent.com/mohsenjahani/JalaliMaterialDateTimePicker/master/screenshots/Screenshot_1577735881.png)
