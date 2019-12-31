@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     var dpd: DatePickerDialog? = null
 
     // Change this
-    var calendarType: DatePickerDialog.Type = DatePickerDialog.Type.GREGORIAN // or DatePickerDialog.Type.GREGORIAN
+    var calendarType: DatePickerDialog.Type = DatePickerDialog.Type.JALALI // or DatePickerDialog.Type.GREGORIAN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,9 @@ class MainActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
              *
             when (dpd?.calendarType) {
                 DatePickerDialog.Type.GREGORIAN -> dpd!!.setFont(null)
-                DatePickerDialog.Type.JALALI -> dpd!!.setFont(Typeface.createFromAsset(assets, "IRANSansMobile(FaNum).ttf"))
+                DatePickerDialog.Type.JALALI -> {
+                    dpd!!.setFont(Typeface.createFromAsset(assets, "IRANSansMobile(FaNum).ttf"))
+                }
             }
             */
 
