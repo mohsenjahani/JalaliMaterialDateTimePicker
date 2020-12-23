@@ -174,7 +174,7 @@ class DefaultDateRangeLimiter implements DateRangeLimiter {
     @Override
     public boolean isOutOfRange(int year, int month, int day) {
         TimeZone timezone = mController == null ? TimeZone.getDefault() : mController.getTimeZone();
-        Calendar date = Calendar.getInstance(timezone);
+        JalaliCalendar date = JalaliCalendar.getInstance(timezone);
         date.set(Calendar.YEAR, year);
         date.set(Calendar.MONTH, month);
         date.set(Calendar.DAY_OF_MONTH, day);
@@ -182,7 +182,6 @@ class DefaultDateRangeLimiter implements DateRangeLimiter {
     }
 
     private boolean isOutOfRange(@NonNull Calendar calendar) {
-        Utils.trimToMidnight(calendar);
         return isDisabled(calendar) || !isSelectable(calendar);
     }
 
